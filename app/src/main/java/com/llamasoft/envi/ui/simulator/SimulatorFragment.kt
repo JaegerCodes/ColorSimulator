@@ -61,15 +61,21 @@ class SimulatorFragment : Fragment() {
     private fun setupView() {
         binding.apply {
             selectedImage.onTouch { image, event ->
-                binding.mainScroll.setScrollingEnabled(false)
+                mainScroll.setScrollingEnabled(false)
                 when (event.action) {
-                    MotionEvent.ACTION_UP ->
-                        if (paintType == PaintType.Paint) paintPicture(image as ImageView, event)
-                    MotionEvent.ACTION_DOWN,
-                    MotionEvent.ACTION_MOVE ->
-                        if (paintType == PaintType.Brush) useBrush(image as ImageView, event)
+                    MotionEvent.ACTION_UP -> paintPicture(image as ImageView, event)
                     MotionEvent.ACTION_CANCEL ->
-                        binding.mainScroll.setScrollingEnabled(true)
+                        mainScroll.setScrollingEnabled(true)
+                }
+            }
+            brushImage.onTouch { image, event ->
+                mainScroll.setScrollingEnabled(false)
+                when (event.action) {
+                    MotionEvent.ACTION_UP,
+                    MotionEvent.ACTION_DOWN,
+                    MotionEvent.ACTION_MOVE -> useBrush(image as ImageView, event)
+                    MotionEvent.ACTION_CANCEL ->
+                        mainScroll.setScrollingEnabled(true)
                 }
             }
             recyclerView.adapter = SavedColorAdapter(emptyColors, listenerSavedColors)
@@ -180,14 +186,22 @@ class SimulatorFragment : Fragment() {
     private fun bringToFront(image: ImageView) = binding.apply {
         when (image.id) {
             R.id.selectedImage -> {
-                originalImage.visibility = View.INVISIBLE
+                originalImage.visibility    = View.INVISIBLE
+                brushImage.visibility       = View.INVISIBLE
+                selectedImage.visibility    = View.VISIBLE
                 selectedImage.bringToFront()
-                selectedImage.visibility = View.VISIBLE
             }
             R.id.originalImage -> {
-                selectedImage.visibility = View.INVISIBLE
+                selectedImage.visibility    = View.INVISIBLE
+                brushImage.visibility       = View.INVISIBLE
+                originalImage.visibility    = View.VISIBLE
                 originalImage.bringToFront()
-                originalImage.visibility = View.VISIBLE
+            }
+            R.id.brushImage -> {
+                originalImage.visibility    = View.INVISIBLE
+                selectedImage.visibility    = View.INVISIBLE
+                brushImage.visibility       = View.VISIBLE
+                brushImage.bringToFront()
             }
         }
         brushSizeSliderContainer.bringToFront()
