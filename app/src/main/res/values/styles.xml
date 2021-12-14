@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="MyTheme" parent="@style/Theme.AppCompat">
+        <item name="colorPrimary">@color/white</item>
+        <item name="titleTextColor">@color/gray_800</item>
+        <item name="actionMenuTextColor">@color/gray_800</item>
+        <item name="android:textColorPrimary">@color/gray_800</item>
+    </style>
+    <style name="ToolbarTransparent" parent="@style/Widget.MaterialComponents.Toolbar">
+        <item name="elevation">0dp</item>
+        <item name="titleTextColor">@color/white</item>
+        <item name="android:background">@color/transparent</item>
+    </style>
+
+    <style name="Base.Theme.MyApp.CardItem" parent="Widget.MaterialComponents.CardView">
+        <item name="rippleColor" tools:ignore="NewApi">@color/teal</item>
+        <item name="android:focusable" tools:ignore="NewApi">true</item>
+        <item name="android:clickable" tools:ignore="NewApi">true</item>
+        <item name="android:background">@drawable/background_form_card</item>
+    </style>
+
+    <!--Bottom Sheets-->
+    <style name="ThemeOverlay.MyTheme.BottomSheetDialog" parent="ThemeOverlay.MaterialComponents.Dialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@style/Animation.MyTheme.BottomSheet.Modal</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="bottomSheetStyle">@style/Widget.MyTheme.BottomSheet.Modal</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <item name="android:navigationBarDividerColor" tools:ignore="NewApi">@android:color/transparent</item>
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">18dp</item>
+        <item name="cornerSizeTopLeft">18dp</item>
+    </style>
+
+    <style name="EditTextDialog" parent="ThemeOverlay.MaterialComponents.Dialog">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">4dp</item>
+        <item name="cornerSizeTopLeft">4dp</item>
+    </style>
+    <style name="Widget.MyTheme.BottomSheet.Modal" parent="Widget.MaterialComponents.BottomSheet.Modal">
+        <item name="shapeAppearanceOverlay">?attr/shapeAppearanceLargeComponent</item>
+    </style>
+
+    <!--Navigation Drawer-->
+    <style name="Widget.MyTheme.NavigationView" parent="Widget.MaterialComponents.NavigationView">
+        <item name="itemTextAppearance">?attr/textAppearanceBody2</item>
+    </style>
+
+    <style name="Widget.MyTheme.CheckboxStyle" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="android:button">@null</item>
+        <item name="buttonTint">@color/black</item>
+        <item name="colorSecondary">@color/black</item>
+        <item name="android:background">?android:attr/listChoiceIndicatorMultiple</item>
+        <item name="android:layout_width">@dimen/checkbox_size</item>
+        <item name="android:layout_height">@dimen/checkbox_size</item>
+    </style>
+
+    <style name="Widget.SnackBar" parent="Widget.MaterialComponents.Snackbar">
+        <item name="android:layout_margin">0dp</item>
+    </style>
+</resources>

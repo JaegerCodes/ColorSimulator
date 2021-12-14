@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/item"
+    android:padding="@dimen/keyline_2">
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/border"
+        android:layerType="software"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:contentDescription="@string/ignore"
+        app:layout_constraintDimensionRatio="H,1:1"
+        app:strokeWidth="1dp"
+        app:strokeColor="@color/gray_300"
+        android:scaleType="centerCrop"
+        android:background="@color/gray_60"
+        app:shapeAppearance="@style/ShapeAppearanceOverlay.MyApp.Image.AllCorners5dp"
+        />
+    <ImageView
+        android:id="@+id/icon_simulator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/border"
+        app:layout_constraintBottom_toBottomOf="@+id/border"
+        app:layout_constraintStart_toStartOf="@id/border"
+        app:layout_constraintEnd_toEndOf="@id/border"
+        android:contentDescription="@string/ignore"
+        android:src="@drawable/ic_simulator_bucket"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>

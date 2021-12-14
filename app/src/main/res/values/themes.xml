@@ -1,0 +1,730 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!--Top level DayNight theme to be used in AndroidManifest.xml-->
+    <style name="Theme.MyApp" parent="Base.Theme.MyApp" />
+
+
+    <style name="Base.Theme.MyApp" parent="Base.Theme.MaterialThemeBuilder">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/gray_350</item>
+        <item name="colorPrimaryVariant">@color/gray_800</item>
+        <item name="colorOnPrimary">@color/gray_800</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/gray_800</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+        <!--Material type attributes-->
+        <item name="textAppearanceHeadline1">@style/TextAppearance.MyTheme.Headline1</item>
+        <item name="textAppearanceHeadline2">@style/TextAppearance.MyTheme.Headline2</item>
+        <item name="textAppearanceHeadline3">@style/TextAppearance.MyTheme.Headline3</item>
+        <item name="textAppearanceHeadline4">@style/TextAppearance.MyTheme.Headline4</item>
+        <item name="textAppearanceHeadline5">@style/TextAppearance.MyTheme.Headline5</item>
+        <item name="textAppearanceHeadline6">@style/TextAppearance.MyTheme.Headline6</item>
+        <item name="textAppearanceSubtitle1">@style/TextAppearance.MyTheme.Subtitle1</item>
+        <item name="textAppearanceSubtitle2">@style/TextAppearance.MyTheme.Subtitle2</item>
+        <item name="textAppearanceBody1">@style/TextAppearance.MyTheme.Body1</item>
+        <item name="textAppearanceBody2">@style/TextAppearance.MyTheme.Body2</item>
+        <item name="textAppearanceButton">@style/TextAppearance.MyTheme.Button</item>
+        <item name="textAppearanceCaption">@style/TextAppearance.MyTheme.Caption</item>
+        <item name="textAppearanceOverline">@style/TextAppearance.MyTheme.Overline</item>
+
+        <!--Material shape attributes-->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.MyTheme.SmallComponent
+        </item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.MyTheme.MediumComponent
+        </item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.MyTheme.LargeComponent
+        </item>
+        <!--Component styles-->
+        <item name="checkboxStyle">@style/Widget.MyTheme.CheckboxStyle</item>
+        <item name="android:checkboxStyle">@style/Widget.MyTheme.CheckboxStyle</item>
+        <item name="android:windowBackground">@drawable/ic_fondocolor_logo</item>
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.MyTheme.BottomSheetDialog</item>
+        <item name="snackbarStyle">@style/Widget.SnackBar</item>
+    </style>
+
+
+    <style name="Base.Theme.Widgets" parent="Base.Theme.MaterialThemeBuilder">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimaryVariant">@color/gray_800</item>
+        <item name="colorOnPrimary">@color/gray_800</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/white</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/gray_800</item>
+    </style>
+
+
+    <style name="Base.Theme.MaterialThemeBuilder" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:statusBarColor" tools:ignore="NewApi">?attr/colorSurface</item>
+        <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
+        <item name="android:navigationBarColor" tools:ignore="NewApi">
+            ?android:attr/colorBackground
+        </item>
+        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">true</item>
+        <item name="android:navigationBarDividerColor" tools:ignore="NewApi">
+            ?attr/colorControlHighlight
+        </item>
+        <item name="windowActionBar">false</item>
+        <item name="windowActionBarOverlay">true</item>
+        <item name="android:windowActionBarOverlay">true</item>
+    </style>
+
+    <style name="SplashTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/ic_fondocolor_logo</item>
+        <item name="colorPrimary">@color/gray_800</item>
+        <item name="colorPrimaryDark">@color/gray_700</item>
+        <item name="colorAccent">@color/teal</item>
+        <item name="android:statusBarColor">@color/gray_800</item>
+    </style>
+
+    <style name="Theme.MyApp.Toolbar.Transparent" parent="Widget.Design.AppBarLayout">
+        <item name="elevation">0dp</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="titleTextColor">@color/white</item>
+        <item name="background">@color/transparent</item>
+    </style>
+
+    <!-- BUTTON STYLES -->
+    <style name="Theme.MyApp.TextButton.SemiLight" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textAllCaps">true</item>
+        <item name="fontFamily">@font/grold_semi_light</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Theme.MyApp.Button.TextButton.Caps" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/gray_800</item>
+    </style>
+
+    <style name="Theme.MyApp.Button.TextButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="cornerRadius">3dp</item>
+    </style>
+
+    <style name="Theme.MyApp.Button.IconOnly" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="rippleColor">@color/gray_300</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:elevation">0dp</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.MyApp.Button.Circle</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconSize">@dimen/keyline_5</item>
+        <item name="iconTint">@color/gray_800</item>
+    </style>
+
+    <style name="Theme.MyApp.Button.Secondary" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="strokeColor">@color/white</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="maxLines">1</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="Theme.MyApp.Button.DottedLight" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="maxLines">1</item>
+        <item name="backgroundTint">@null</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@drawable/background_dotted_light</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="fontFamily">@font/grold_medium</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:letterSpacing">0.1</item>
+    </style>
+
+    <style name="Theme.MyApp.Button.DottedDark" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="maxLines">1</item>
+        <item name="backgroundTint">@null</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAppearance">@style/TextAppearance.MyTheme.Body1</item>
+        <item name="android:background">@drawable/background_dotted_dark</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="android:layout_height">60dp</item>
+    </style>
+
+    <style name="Theme.MyApp.Button.DarkLine.White" parent="Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">@color/white</item>
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:layout_height">60dp</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="cornerRadius">4dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAppearance">@style/TextAppearance.MyTheme.Body1</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="textAllCaps">true</item>
+    </style>
+    <style name="Theme.MyApp.Button.Underlined.DarkCaps" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="Theme.MyApp.Button.Underlined.Dark" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:textSize">19sp</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:fontFamily">@font/grotesk_bold</item>
+    </style>
+    <style name="Theme.MyApp.Button.Chip.Action" parent="@style/Widget.MaterialComponents.Chip.Action">
+        <item name="maxLines">1</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="android:textAppearance">@style/TextAppearance.MyTheme.Body1</item>
+    </style>
+
+    <style name="Theme.MyApp.Button.Auth" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="strokeColor">@color/white</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="maxLines">1</item>
+        <item name="android:layout_height">70dp</item>
+        <item name="cornerRadius">4dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:letterSpacing">0.2</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Theme.MyApp.Button.FullSize" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:layout_height">62dp</item>
+        <item name="colorAccent">@color/white</item>
+        <item name="colorButtonNormal">@color/gray_800</item>
+        <item name="cornerRadius">0dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="Theme.MyApp.Button.Light" parent="Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">@color/white</item>
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:layout_height">60dp</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cornerRadius">2dp</item>
+        <item name="fontFamily">@font/grotesk_bold</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="Theme.MyApp.Button.GrayBorder" parent="Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">@color/white</item>
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:layout_height">65dp</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="strokeColor">@color/gray_70</item>
+        <item name="cornerRadius">5dp</item>
+        <item name="elevation">0dp</item>
+        <item name="fontFamily">@font/grotesk_medium</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="Theme.MyApp.Button.Teal" parent="Widget.MaterialComponents.Button">
+        <item name="rippleColor">@color/white</item>
+        <item name="android:backgroundTint">@color/teal</item>
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="strokeColor">@color/gray_800</item>
+        <item name="cornerRadius">1dp</item>
+    </style>
+
+    <style name="Theme.MyApp.Button.Light.Tapped" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="backgroundTint">@null</item>
+        <item name="strokeColor">@color/gray_800</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="maxLines">1</item>
+        <item name="android:layout_height">60dp</item>
+        <item name="cornerRadius">2dp</item>
+        <item name="backgroundColor">@color/gray_800</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="Theme.MyApp.Dropdown" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="boxBackgroundColor">@color/gray_60</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/keyline_0</item>
+        <item name="boxCornerRadiusTopStart">@dimen/keyline_0</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/keyline_0</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/keyline_0</item>
+        <item name="endIconDrawable">@drawable/ic_arrow_down</item>
+    </style>
+
+    <!-- TEXT STYLES -->
+    <style name="Theme.MyApp.HeadingDarkH0Medium1" parent="TextAppearance.MaterialComponents.Headline3">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="fontFamily">@font/grold_medium</item>
+    </style>
+    <style name="Theme.MyApp.HeadingDarkH0Medium2" parent="TextAppearance.MaterialComponents.Headline3">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="fontFamily">@font/grold_medium</item>
+        <item name="android:textSize">43sp</item>
+    </style>
+    <style name="Theme.MyApp.HeadingDarkH0Medium3" parent="TextAppearance.MaterialComponents.Headline3">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="fontFamily">@font/grold_medium</item>
+        <item name="android:textSize">28sp</item>
+    </style>
+    <style name="Theme.MyApp.HeadingDarkH0Medium4" parent="TextAppearance.MaterialComponents.Headline3">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="fontFamily">@font/grold_medium</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+    <style name="Theme.MyApp.HeadingDarkH0Medium5" parent="TextAppearance.MaterialComponents.Headline3">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="fontFamily">@font/grold_medium</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+    <style name="Theme.MyApp.ParagraphsGrayRegular" parent="">
+        <item name="android:textColor">@color/gray_700</item>
+        <item name="fontFamily">@font/grotesk_regular</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+    <style name="Theme.MyApp.Body1GrayRegular1" parent="">
+        <item name="android:textColor">@color/gray_700</item>
+        <item name="fontFamily">@font/grotesk_regular</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+    <style name="Theme.MyApp.Body1GrayRegular2" parent="">
+        <item name="android:textColor">@color/gray_700</item>
+        <item name="fontFamily">@font/grotesk_regular</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+    <style name="Theme.MyApp.Body2GrayRegular" parent="">
+        <item name="android:textColor">@color/gray_700</item>
+        <item name="fontFamily">@font/grotesk_regular</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+    <style name="Theme.MyApp.Text.Headline1.Light" parent="TextAppearance.MyTheme.Headline1">
+        <item name="android:textColor">@color/white</item>
+        <item name="fontFamily">@font/grold_medium</item>
+        <item name="android:textSize">28sp</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Initials" parent="TextAppearance.MyTheme.Headline1">
+        <item name="android:textColor">@color/white</item>
+        <item name="fontFamily">@font/grold_extra_bold</item>
+        <item name="android:textSize">52sp</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Title.Light" parent="TextAppearance.MyTheme.Title">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Title.Dark" parent="TextAppearance.MyTheme.Title">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+
+
+    <style name="Theme.MyApp.Text.SubTitle.Dark" parent="TextAppearance.MyTheme.Title">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Subtitle1.Dark" parent="TextAppearance.MyTheme.Subtitle1">
+        <item name="android:textColor">@color/gray_400</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Snackbar.Message" parent="TextAppearance.MyTheme.Title">
+        <item name="android:textSize">19sp</item>
+        <item name="maxLines">3</item>
+        <item name="android:textColor">@color/gray_800</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Description.Gray" parent="TextAppearance.MyTheme.Subtitle1">
+        <item name="android:textColor">@color/gray_400</item>
+        <item name="android:letterSpacing">0.05</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Description.Light" parent="TextAppearance.MyTheme.Body1">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:letterSpacing">0.05</item>
+        <item name="android:textSize">20sp</item>
+        <item name="autoSizeMinTextSize">17sp</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Body1.Gray" parent="TextAppearance.MyTheme.Body1">
+        <item name="android:textColor">@color/gray_300</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Description.Dark" parent="TextAppearance.MyTheme.Body1">
+        <item name="android:textColor">@color/gray_450</item>
+        <item name="android:textSize">18sp</item>
+        <item name="fontFamily">@font/grold_semi_light</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Body1.Light" parent="TextAppearance.MyTheme.Body1">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Body1.Title.Dark" parent="TextAppearance.MyTheme.Body1">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.2</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Body1.SemiLight" parent="TextAppearance.MyTheme.Body1">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="fontFamily">@font/grold_semi_light</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Body1.Medium.Caps" parent="TextAppearance.MyTheme.Body1">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="fontFamily">@font/grold_medium</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Body1.Medium.Caps.Dark" parent="Theme.MyApp.Text.Body1.Medium.Caps">
+        <item name="android:textColor">@color/gray_800</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Body1.Medium" parent="Theme.MyApp.Text.Body1.Medium.Caps">
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Item.Description.Dark" parent="TextAppearance.MyTheme.Body1">
+        <item name="android:textColor">@color/gray_600</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Item.Title.Dark" parent="TextAppearance.MyTheme.Subtitle1">
+        <item name="android:textColor">@color/gray_600</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Item.TitleImage1.Dark" parent="TextAppearance.MyTheme.Subtitle1">
+        <item name="android:textColor">@color/gray_600</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textSize">17sp</item>
+        <item name="autoSizeMinTextSize">15sp</item>
+    </style>
+    <style name="Theme.MyApp.Text.Item.TitleImage2.Dark" parent="TextAppearance.MyTheme.Subtitle1">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">17sp</item>
+        <item name="autoSizeMinTextSize">15sp</item>
+        <item name="fontFamily">@font/grotesk_bold</item>
+    </style>
+    <style name="Theme.MyApp.Text.Item.Subtitle1.Dark" parent="TextAppearance.MyTheme.Subtitle1">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.1</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Section.Title.Dark" parent="TextAppearance.MyTheme.Subtitle1">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.18</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+    <style name="Theme.MyApp.Text.Paragraph1DarkMediumGray1" parent="TextAppearance.MyTheme.Title">
+        <item name="fontFamily">@font/grotesk_medium</item>
+        <item name="android:textColor">@color/gray_400</item>
+        <item name="android:textSize">19sp</item>
+    </style>
+    <style name="Theme.MyApp.Text.Paragraph1DarkMediumGray2" parent="TextAppearance.MyTheme.Title">
+        <item name="fontFamily">@font/grotesk_medium</item>
+        <item name="android:textColor">@color/gray_400</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+    <style name="Theme.MyApp.Text.Paragraph1DarkBoldMedium1" parent="TextAppearance.MyTheme.Title">
+        <item name="fontFamily">@font/grotesk_bold</item>
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+    <style name="Theme.MyApp.Text.Paragraph1DarkBoldMedium2" parent="TextAppearance.MyTheme.Title">
+        <item name="fontFamily">@font/grotesk_bold</item>
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+    <style name="Theme.MyApp.Text.Paragraph1DarkBoldMedium3" parent="TextAppearance.MyTheme.Title">
+        <item name="fontFamily">@font/grotesk_bold</item>
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:textSize">22sp</item>
+    </style>
+    <style name="Theme.MyApp.Text.Paragraph2DarkMediumDark" parent="">
+        <item name="fontFamily">@font/grotesk_medium</item>
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+    <style name="Theme.MyApp.Text.Paragraph2DarkTinyGray0" parent="">
+        <item name="fontFamily">@font/grotesk_medium</item>
+        <item name="android:textColor">@color/gray_400</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+    <style name="Theme.MyApp.Text.Paragraph2DarkTinyGray1" parent="">
+        <item name="fontFamily">@font/grotesk_medium</item>
+        <item name="android:textColor">@color/gray_400</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+    <style name="Theme.MyApp.Text.Paragraph2DarkTinyGray2" parent="">
+        <item name="fontFamily">@font/grotesk_regular</item>
+        <item name="android:textColor">@color/gray_700</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+    <style name="Theme.MyApp.Text.Paragraph2DarkTinyWhite1" parent="">
+        <item name="fontFamily">@font/grotesk_regular</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+    <style name="Theme.MyApp.Text.SubtitleWhite1" parent="">
+        <item name="fontFamily">@font/grotesk_regular</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+    <style name="Theme.MyApp.Text.Item.Subtitle1.Gray" parent="TextAppearance.MyTheme.Subtitle1">
+        <item name="android:textColor">@color/gray_700</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.1</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Item.Subtitle2.Dark" parent="TextAppearance.MyTheme.Caption">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/gray_400</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="fontFamily">@font/grotesk_regular</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Information" parent="">
+        <item name="android:textColor">@color/gray_700</item>
+        <item name="android:textSize">19sp</item>
+        <item name="android:fontFamily">@font/grold_light</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Information.Section" parent="">
+        <item name="android:textColor">@color/gray_700</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/grold_light</item>
+    </style>
+    <style name="Theme.MyApp.Text.Light1" parent="">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/grold_light</item>
+    </style>
+    <style name="Theme.MyApp.Text.Light2" parent="">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">@font/grold_light</item>
+        <item name="textAllCaps">true</item>
+    </style>
+    <style name="Theme.MyApp.Text.Item.SubtitleCaps.Dark" parent="TextAppearance.MyTheme.Subtitle1">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.18</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Item.Caption.Dark" parent="TextAppearance.MyTheme.Caption">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/gray_400</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="fontFamily">@font/grotesk_regular</item>
+    </style>
+    <style name="Theme.MyApp.Subtitle2.DarkBold1" parent="">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="fontFamily">@font/grotesk_bold</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+    <style name="Theme.MyApp.Subtitle2.DarkBold2" parent="Theme.MyApp.Subtitle2.DarkBold1">
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textColor">@color/gray_750</item>
+    </style>
+    <style name="Theme.MyApp.Subtitle3.Gray" parent="TextAppearance.MyTheme.Caption">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/gray_700</item>
+        <item name="android:letterSpacing">0.07</item>
+        <item name="fontFamily">@font/grotesk_medium</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="Theme.MyApp.Subtitle1.Gray" parent="">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="fontFamily">@font/grotesk_regular</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+    <style name="Theme.MyApp.Subtitle2.GrayBold" parent="">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/gray_400</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="fontFamily">@font/grotesk_bold</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+    <style name="Theme.MyApp.Subtitle2.Gray" parent="Theme.MyApp.Subtitle2.GrayBold">
+        <item name="fontFamily">@font/grotesk_regular</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Item.Subtitle3.Dark" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/gray_400</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.HeadLine6.Light" parent="TextAppearance.MyTheme.Headline6">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.2</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20sp</item>
+        <item name="autoSizeMinTextSize">18sp</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.HeadLine6.Dark" parent="TextAppearance.MyTheme.Headline6">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.HeadLine6.Dark.Caps" parent="TextAppearance.MyTheme.Headline6">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.08</item>
+        <item name="textAllCaps">true</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+    <style name="Theme.MyApp.Text.HeadLine6.Dark.CapsBold" parent="TextAppearance.MyTheme.Headline6">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="fontFamily">@font/grold_bold</item>
+        <item name="android:letterSpacing">0.08</item>
+        <item name="textAllCaps">true</item>
+        <item name="android:textSize">19sp</item>
+    </style>
+    <style name="Theme.MyApp.Text.HeadLine5.Dark1" parent="">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="fontFamily">@font/grold_medium</item>
+        <item name="android:letterSpacing">0.08</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+    <style name="Theme.MyApp.Text.HeadLine5.Dark.Caps" parent="">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="fontFamily">@font/grold_medium</item>
+        <item name="android:letterSpacing">0.08</item>
+        <item name="textAllCaps">true</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.HeadLine5.Dark" parent="TextAppearance.MyTheme.Headline5">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="fontFamily">@font/grold_medium</item>
+        <item name="android:textSize">25sp</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.HeadLine6Title.Light" parent="TextAppearance.MyTheme.Headline6">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:letterSpacing">0.05</item>
+        <item name="android:textSize">32sp</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Caption.Light" parent="TextAppearance.MyTheme.Caption">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">12sp</item>
+        <item name="fontFamily">@font/grold_semi_light</item>
+    </style>
+    <style name="TextAppearance.MyTheme.ToolbarText" parent="TextAppearance.MaterialComponents.Headline5">
+        <item name="fontFamily">@font/grold_regular</item>
+        <item name="android:textColor">@color/gray_720</item>
+        <item name="android:textSize">22sp</item>
+    </style>
+    <style name="Theme.MyApp.Text.Caption.Dark" parent="TextAppearance.MyTheme.Body1">
+        <item name="android:textColor">@color/gray_300</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Body1.Caps.Dark" parent="TextAppearance.MyTheme.Body2">
+        <item name="android:textColor">@color/gray_600</item>
+        <item name="textAllCaps">true</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="Theme.MyApp.Text.Headline4.Dark" parent="">
+        <item name="fontFamily">@font/grold_medium</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">38sp</item>
+    </style>
+
+    <style name="Theme.MyApp.EditTextLayout" parent="@android:style/TextAppearance">
+        <item name="fontFamily">@font/grotesk_bold</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/gray_800</item>
+    </style>
+    <style name="Theme.MyApp.EditText" parent="">
+
+        <item name="android:singleLine">true</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:textColorHint">@color/gray_350</item>
+        <item name="fontFamily">@font/grotesk_regular</item>
+        <item name="backgroundTint">@color/gray_60</item>
+        <item name="paddingStart">@dimen/keyline_4</item>
+        <item name="paddingEnd">@dimen/keyline_0</item>
+        <item name="android:paddingTop">28dp</item>
+        <item name="android:lines">1</item>
+    </style>
+
+    <style name="Theme.MyApp.EditText.Multiline" parent="Theme.MyApp.EditText">
+        <item name="android:lines">100</item>
+    </style>
+
+    <style name="Theme.MyApp.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.MyApp.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.MyApp.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="MyTheme.SearchView" parent="Widget.AppCompat.SearchView">
+        <item name="queryHint">@string/search</item>
+        <item name="fontFamily">@font/grotesk_bold</item>
+        <item name="android:editTextColor">@color/gray_800</item>
+        <item name="android:queryHint">?colorAccent</item>
+        <item name="android:textAppearance">?textAppearanceHeadline4</item>
+        <item name="android:textSize">27sp</item>
+        <item name="closeIconTint">?colorAccent</item>
+        <item name="drawableTint">?colorAccent</item>
+        <item name="iconSize">52dp</item>
+    </style>
+
+    <string name="search">Search</string>
+</resources>

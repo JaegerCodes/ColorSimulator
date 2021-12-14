@@ -1,0 +1,84 @@
+<resources>
+
+    <!--Shape-->
+
+    <!--Material allows theming of a component’s shape through the customization of corner -->
+    <!--style and radius size. To systematically apply shape throughout your app, it helps to -->
+    <!--understand that components are categorized by size, grouped into categories of small, -->
+    <!--medium and large. Each component size group can be themed by overriding the Material -->
+    <!--Components attributes ?shapeAppearanceSmallComponent, ?shapeAppearanceMediumComponent -->
+    <!--and ?shapeAppearanceLargeComponent in your app's theme. Those attributes are already -->
+    <!--defined as default styles overridden for you in themes.xml and point to the styles in -->
+    <!--this file.-->
+
+    <!--Experiment with ShapeAppearance properties such as cornerFamily (either ‘cut’ or -->
+    <!--‘rounded’) and corner size. Alternatively, customize each ShapeAppearance on a -->
+    <!--per-corner basis with cornerFamilyTopLeft, cornerFamilyTopRight, cornerFamilyBottomLeft, -->
+    <!--cornerFamilyBottomRight and cornerSizeTopRight, cornerSizeTopLeft, cornerSizeBottomLeft -->
+    <!--and cornerSizeBottomRight.-->
+
+    <!--Shape Appearance for small components like chips, buttons, text fields and FABs-->
+    <style name="ShapeAppearance.MyTheme.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">2dp</item>
+    </style>
+
+    <!--Shape Appearance for medium components like cards, alert dialogs-->
+    <style name="ShapeAppearance.MyTheme.MediumComponent" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <!--Your custom shape here-->
+    </style>
+
+    <!--Shape Appearance for large components like side and bottom navigation drawers-->
+    <style name="ShapeAppearance.MyTheme.LargeComponent" parent="ShapeAppearance.MaterialComponents.LargeComponent">
+        <!--Your custom shape here-->
+    </style>
+
+    <!--Shape Appearance overlay for ShapeableImageView -->
+    <style name="ShapeAppearanceOverlay.MyApp.Image.LeftCorners" parent="">
+        <item name="cornerSizeTopLeft">2dp</item>
+        <item name="cornerSizeBottomLeft">2dp</item>
+    </style>
+    <style name="ShapeAppearanceOverlay.MyApp.Image.RightCorners" parent="">
+        <item name="cornerSizeTopRight">8dp</item>
+        <item name="cornerSizeBottomRight">8dp</item>
+    </style>
+    <style name="ShapeAppearanceOverlay.MyApp.Image.AllCorners5dp" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">5dp</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.MyApp.Image.AllCorners8dp" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+    <style name="ShapeAppearanceOverlay.MyApp.Image.TopCorners5dp" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">5dp</item>
+        <item name="cornerSizeTopRight">5dp</item>
+    </style>
+    <style name="ShapeAppearanceOverlay.MyApp.Image.AllCorners2dp" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">2dp</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.MyApp.Image.TopCorners3dp" parent="">
+        <item name="cornerSizeTopLeft">3dp</item>
+        <item name="cornerSizeTopRight">3dp</item>
+    </style>
+    <style name="ShapeAppearanceOverlay.MyApp.Image.TopLeftCorners3dp" parent="">
+        <item name="cornerSizeTopLeft">3dp</item>
+    </style>
+    <style name="ShapeAppearanceOverlay.MyApp.Image.BottomLeftCorners" parent="">
+        <item name="cornerSizeBottomLeft">3dp</item>
+    </style>
+    <style name="ShapeAppearanceOverlay.MyApp.Image.BottomCorners" parent="">
+        <item name="cornerSizeBottomLeft">3dp</item>
+        <item name="cornerSizeBottomRight">3dp</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.MyApp.Button.Circle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+</resources>

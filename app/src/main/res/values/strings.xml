@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">Environment Simulator</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="ignore">ignore</string>
+    <string name="take_a_picture">Tomar una foto</string>
+    <string name="simulator_title">Prueba colores en diferentes ambientes con nuestro simulador</string>
+    <string name="pick_from_gallery">Escoger una foto</string>
+    <string name="title_simulator_root">Simulador de ambientes</string>
+    <string name="title_new_project_root">Nuevo proyecto</string>
+    <string name="title">A title</string>
+    <string name="brush_slider_title_paint_brush">Tamaño de rodillo</string>
+    <string name="brush_slider_min_value">Pequeño</string>
+    <string name="brush_slider_max_value">Grande</string>
+    <string name="my_pallete">Mi paleta de colores</string>
+    <string name="explore_our_colors">Explora nuestros colores</string>
+    <string name="add_to_pallete">Escoger color</string>
+    <string name="crop_image_activity_title">Escala y recorta</string>
+    <string name="crop_image_menu_crop">Cortar Imagen</string>
+</resources>
