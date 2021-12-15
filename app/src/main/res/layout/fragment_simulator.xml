@@ -20,24 +20,6 @@
             android:layout_height="0dp"
             android:layout_weight="1">
             <ImageView
-                android:id="@+id/originalImage"
-                android:visibility="invisible"
-                android:scaleType="centerCrop"
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:contentDescription="@string/ignore"/>
-            <ImageView
-                android:id="@+id/brushImage"
-                android:visibility="invisible"
-                android:scaleType="centerCrop"
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:contentDescription="@string/ignore"/>
-            <ImageView
                 android:id="@+id/selectedImage"
                 android:scaleType="centerCrop"
                 android:layout_gravity="center"

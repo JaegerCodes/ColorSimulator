@@ -36,12 +36,12 @@ class SimulatorFragment : Fragment() {
     private var _binding: FragmentSimulatorBinding? = null
     private val binding get() = _binding!!
     private var rgbWallColor    : List<Int> = arrayListOf(0, 0, 0)
+    private val imageQueue = ArrayDeque<Bitmap>(100)
     private var srcBitmap       : Bitmap? = null
-    private var paintedImage    : Bitmap? = null
     private var paintType       : PaintType = PaintType.Paint
     private var paintBrushSize  : Int = 10
+    private val historySize  : Int = 10
     private val segmentor       : SegmentorImpl = SegmentorImpl()
-    private var seeds: MutableList<SeedPointAndColor> = ArrayList()
     private lateinit var optionPaintAdapter: OptionPaintAdapter
 
     override fun onCreateView(
@@ -62,20 +62,20 @@ class SimulatorFragment : Fragment() {
         binding.apply {
             selectedImage.onTouch { image, event ->
                 mainScroll.setScrollingEnabled(false)
-                when (event.action) {
-                    MotionEvent.ACTION_UP -> paintPicture(image as ImageView, event)
-                    MotionEvent.ACTION_CANCEL ->
-                        mainScroll.setScrollingEnabled(true)
-                }
-            }
-            brushImage.onTouch { image, event ->
-                mainScroll.setScrollingEnabled(false)
-                when (event.action) {
-                    MotionEvent.ACTION_UP,
-                    MotionEvent.ACTION_DOWN,
-                    MotionEvent.ACTION_MOVE -> useBrush(image as ImageView, event)
-                    MotionEvent.ACTION_CANCEL ->
-                        mainScroll.setScrollingEnabled(true)
+                if(paintType == PaintType.Paint) {
+                    when (event.action) {
+                        MotionEvent.ACTION_UP -> paintPicture(image as ImageView, event)
+                        MotionEvent.ACTION_CANCEL ->
+                            mainScroll.setScrollingEnabled(true)
+                    }
+                }else{
+                    when (event.action) {
+                        MotionEvent.ACTION_UP,
+                        MotionEvent.ACTION_DOWN,
+                        MotionEvent.ACTION_MOVE -> useBrush(image as ImageView, event)
+                        MotionEvent.ACTION_CANCEL ->
+                            mainScroll.setScrollingEnabled(true)
+                    }
                 }
             }
             recyclerView.adapter = SavedColorAdapter(emptyColors, listenerSavedColors)
@@ -104,17 +104,21 @@ class SimulatorFragment : Fragment() {
 
         }
     }
-
+    private fun setImage(resource: Bitmap?){
+        _binding?.selectedImage?.setImageBitmap(resource)
+        srcBitmap = resource
+        imageQueue.clear()
+        if(srcBitmap!=null){
+            imageQueue.addLast(srcBitmap!!)
+        }
+    }
     private fun loadRemoteImage(urlImage: String) = Glide.with(requireContext())
         .asBitmap()
         .placeholder(R.drawable.ic_image_placeholder)
         .load(urlImage)
         .into(object : BitmapImageViewTarget(binding.selectedImage) {
             override fun setResource(resource: Bitmap?) {
-                _binding?.originalImage?.setImageBitmap(resource)
-                _binding?.brushImage?.setImageBitmap(resource)
-                _binding?.selectedImage?.setImageBitmap(resource)
-                srcBitmap = resource
+                setImage(resource)
                 //simulatorVM.initializeSimulator(srcBitmap)
             }
         })
@@ -123,8 +127,7 @@ class SimulatorFragment : Fragment() {
         selectedImage.setImageURI(uriImage)
         selectedImage.drawable?.let {
             srcBitmap = (it as BitmapDrawable).bitmap
-            originalImage.setImageBitmap(srcBitmap)
-            brushImage.setImageBitmap(srcBitmap)
+            setImage(srcBitmap)
             //simulatorVM.initializeSimulator(srcBitmap)
         }
     }
@@ -133,38 +136,27 @@ class SimulatorFragment : Fragment() {
         override fun onPressBucketButton(option: OptionPaint) {
             setAndShowBrushSlider(false)
             paintType = PaintType.Paint
-
             optionPaintAdapter.changeBordersColor(option)
-            binding.selectedImage.drawable?.let {
-                srcBitmap = (it as BitmapDrawable).bitmap
-                binding.brushImage.setImageBitmap(srcBitmap)
-            }
-            bringToFront(binding.selectedImage)
+            showNewestImage()
         }
 
         override fun onPressBrushButton(option: OptionPaint) {
             setAndShowBrushSlider(true, resources.getString(R.string.brush_slider_title_paint_brush))
             paintType = PaintType.Brush
             optionPaintAdapter.changeBordersColor(option)
-            binding.selectedImage.drawable?.let {
-                srcBitmap = (it as BitmapDrawable).bitmap
-                binding.brushImage.setImageBitmap(srcBitmap)
-            }
-            bringToFront(binding.brushImage)
+            showNewestImage()
         }
 
         override fun onPressMirrorButton(option: OptionPaint) {
             setAndShowBrushSlider(false)
             paintType = PaintType.None
             optionPaintAdapter.changeBordersColor(option)
-            bringToFront(binding.originalImage)
         }
 
         override fun onPressUndoButton(option: OptionPaint) {
             setAndShowBrushSlider(false)
-            bringToFront(binding.selectedImage)
-            undoPoint(srcBitmap)
-            binding.selectedImage.setImageBitmap(paintedImage)
+            undoStep()
+            showNewestImage()
         }
 
 
@@ -173,37 +165,28 @@ class SimulatorFragment : Fragment() {
             colorExplorerDialog.show(childFragmentManager, colorExplorerDialog.tag)
         }
     }
-    private fun undoPoint(srcBitmap: Bitmap?) {
-        val lastSeed = seeds.lastOrNull()
-        paintedImage = if (lastSeed != null) {
-            seeds.remove(lastSeed)
-            segmentor.predictAndColorMultiTapSingleMask(srcBitmap, seeds)
-        } else {
-            segmentor.predictAndColorMultiTapSingleMask(srcBitmap, arrayListOf())
+    private fun showNewestImage(){
+        binding.selectedImage.setImageBitmap(imageQueue.last())
+        bringToFront(binding.selectedImage)
+    }
+    private fun undoStep() {
+        if(imageQueue.size>1){
+            imageQueue.removeLast()
         }
-
     }
     private fun bringToFront(image: ImageView) = binding.apply {
-        when (image.id) {
+        /*hen (image.id) {
             R.id.selectedImage -> {
                 originalImage.visibility    = View.INVISIBLE
-                brushImage.visibility       = View.INVISIBLE
                 selectedImage.visibility    = View.VISIBLE
                 selectedImage.bringToFront()
             }
             R.id.originalImage -> {
                 selectedImage.visibility    = View.INVISIBLE
-                brushImage.visibility       = View.INVISIBLE
                 originalImage.visibility    = View.VISIBLE
                 originalImage.bringToFront()
             }
-            R.id.brushImage -> {
-                originalImage.visibility    = View.INVISIBLE
-                selectedImage.visibility    = View.INVISIBLE
-                brushImage.visibility       = View.VISIBLE
-                brushImage.bringToFront()
-            }
-        }
+        }*/
         brushSizeSliderContainer.bringToFront()
     }
 
@@ -230,14 +213,14 @@ class SimulatorFragment : Fragment() {
     }*/
 
     private fun paintPicture(image: ImageView, event: MotionEvent) {
-        paintContoursFromSelectedWall(srcBitmap, image, event)
-        binding.selectedImage.setImageBitmap(paintedImage)
+        paintContoursFromSelectedWall(image, event)
+        showNewestImage()
     }
 
     private fun useBrush(image: ImageView, event: MotionEvent) {
         setAndShowBrushSlider(false)
-        paintWithBrush(srcBitmap, image, event, paintBrushSize)
-        binding.selectedImage.setImageBitmap(paintedImage)
+        paintWithBrush(image, event, paintBrushSize)
+        showNewestImage()
     }
 
     private var listenerSavedColors: AppListener<SavedColors> = object : AppListener<SavedColors> {
@@ -260,27 +243,32 @@ class SimulatorFragment : Fragment() {
         rgbWallColor = arrayListOf(red, green, blue)
     }
 
-    private fun paintWithBrush(srcBitmap: Bitmap?, imageView: ImageView, imageTap: MotionEvent, brushSize: Int) {
-        val (x, y) = getMotionEvent(imageTap, imageView)
-        if (seeds.size <= 500) {
-            //updateWall(srcBitmap, x.toDouble(), y.toDouble())
-            srcBitmap?.let {
-                val seed = SeedPointAndColor(Point(x.toDouble(), y.toDouble()), rgbWallColor)
-                paintedImage = segmentor.useBrush(it, seed, brushSize)
-            }
+    private fun addImageStep(bitmap: Bitmap){
+        imageQueue.addLast(bitmap)
+        if(imageQueue.size>historySize){
+            imageQueue.removeFirst()
+        }
+    }
 
+    private fun paintWithBrush(imageView: ImageView, imageTap: MotionEvent, brushSize: Int) {
+        val (x, y) = getMotionEvent(imageTap, imageView)
+        //updateWall(srcBitmap, x.toDouble(), y.toDouble())
+        imageQueue.last().let {
+            val seed = SeedPointAndColor(Point(x.toDouble(), y.toDouble()), rgbWallColor)
+            addImageStep(segmentor.useBrush(it, seed, brushSize))
         }
     }
 
     private fun paintContoursFromSelectedWall(
-        srcBitmap: Bitmap?, imageView: ImageView, imageTap: MotionEvent
+        imageView: ImageView, imageTap: MotionEvent
     ) {
         if (rgbWallColor.isNotEmpty()) {
             val (x, y) = getMotionEvent(imageTap, imageView)
-            if (seeds.size <= 500) {
-                //updateWall(srcBitmap, x.toDouble(), y.toDouble())
-                addSeedColor(x.toDouble(), y.toDouble())
-                paintedImage = segmentor.predictAndColorMultiTapSingleMask(srcBitmap, seeds)
+            //updateWall(srcBitmap, x.toDouble(), y.toDouble())
+            val seed = SeedPointAndColor(Point(x.toDouble(), y.toDouble()), rgbWallColor)
+            val bitmap = segmentor.predictAndColorMultiTapSingleMask(imageQueue.last(), listOf(seed));
+            if(bitmap!=null){
+                addImageStep(bitmap)
             }
         }
     }
@@ -316,7 +304,4 @@ class SimulatorFragment : Fragment() {
         }
         return Pair(x, y)
     }
-
-    private fun addSeedColor(tapPointX: Double, tapPointY: Double) = seeds
-        .add(SeedPointAndColor(Point(tapPointX, tapPointY), rgbWallColor))
 }
