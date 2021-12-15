@@ -77,7 +77,6 @@ class SegmentorImpl : Segmentor {
         var maxLevel: Int
         var hierarchy1MatUpdated: Mat
         var lineType: Int
-        var contourIdxUpdated: Int
         var contoursUpdated: List<MatOfPoint>
         var srcImageMat: Mat
         var colorScalar: Scalar
@@ -273,22 +272,19 @@ class SegmentorImpl : Segmentor {
                 }
                 srcImageMat = currentSrcMat
                 contoursUpdated = contours1
-                contourIdxUpdated = contourIdx
                 hierarchy1MatUpdated = hierarchy1Mat
+                colorScalar = Scalar(redValue, greenValue, blueValue, 0.0)
                 Imgproc.drawContours(
                     srcImageMat,
                     contoursUpdated,
-                    contourIdxUpdated,
-                    Scalar(redValue, greenValue, blueValue, 0.0),
+                    contourIdx,
+                    colorScalar,
                     -1,
                     8,
                     hierarchy1MatUpdated,
                     0
                 )
-                colorScalar = Scalar(redValue, greenValue, blueValue, 0.0)
-                Imgproc.drawContours(srcImageMat, contoursUpdated, contourIdxUpdated, colorScalar, EXTEND_LENGTH, lineType, hierarchy1MatUpdated, maxLevel)
-                Core.mean(currentCanvasMat, maskMat)
-                Imgproc.drawContours(srcImageMat, contoursUpdated, contourIdxUpdated, colorScalar, EXTEND_LENGTH, lineType, hierarchy1MatUpdated, maxLevel)
+                Imgproc.drawContours(srcImageMat, contoursUpdated, contourIdx, colorScalar, EXTEND_LENGTH, lineType, hierarchy1MatUpdated, maxLevel)
             } else {
                 imageWidthPortion2Updated = imageWidthPortion2
                 firstMatOfPoint2fUpdated = firstMatOfPoint2f

@@ -70,11 +70,11 @@ class SimulatorFragment : Fragment() {
                     }
                 }else{
                     when (event.action) {
-                        MotionEvent.ACTION_UP,
-                        MotionEvent.ACTION_DOWN,
+                        MotionEvent.ACTION_DOWN -> startBrushEvent()
                         MotionEvent.ACTION_MOVE -> useBrush(image as ImageView, event)
+                        MotionEvent.ACTION_UP,
                         MotionEvent.ACTION_CANCEL ->
-                            mainScroll.setScrollingEnabled(true)
+                            stopBrushEvent()
                     }
                 }
             }
@@ -90,7 +90,17 @@ class SimulatorFragment : Fragment() {
         //simulatorVM.updateColor("#FFFFFFFF")
         //colorsVM.setProjectStep(ProjectSteps.ImagePainter.name)
     }
+    private var brushStaging: Bitmap? = null
+    private fun startBrushEvent(){
+        val tmp = imageQueue.last()
+        brushStaging = tmp.copy(tmp.config,true)
+    }
 
+    private fun stopBrushEvent(){
+        addImageStep(brushStaging!!)
+        binding.selectedImage.setImageBitmap(brushStaging)
+        binding.mainScroll.setScrollingEnabled(true)
+    }
 
     private fun loadImage() = binding.apply {
         arguments?.apply {
@@ -220,7 +230,7 @@ class SimulatorFragment : Fragment() {
     private fun useBrush(image: ImageView, event: MotionEvent) {
         setAndShowBrushSlider(false)
         paintWithBrush(image, event, paintBrushSize)
-        showNewestImage()
+        binding.selectedImage.setImageBitmap(brushStaging)
     }
 
     private var listenerSavedColors: AppListener<SavedColors> = object : AppListener<SavedColors> {
@@ -253,9 +263,9 @@ class SimulatorFragment : Fragment() {
     private fun paintWithBrush(imageView: ImageView, imageTap: MotionEvent, brushSize: Int) {
         val (x, y) = getMotionEvent(imageTap, imageView)
         //updateWall(srcBitmap, x.toDouble(), y.toDouble())
-        imageQueue.last().let {
+        brushStaging?.let {
             val seed = SeedPointAndColor(Point(x.toDouble(), y.toDouble()), rgbWallColor)
-            addImageStep(segmentor.useBrush(it, seed, brushSize))
+            brushStaging = segmentor.useBrush(it, seed, brushSize)
         }
     }
 
