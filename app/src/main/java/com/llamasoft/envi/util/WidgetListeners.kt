@@ -16,8 +16,8 @@ interface PaintMenuListener {
     fun onPressBrushButton(option: OptionPaint)
     fun onPressMirrorButton(option: OptionPaint)
     fun onPressUndoButton(option: OptionPaint)
-    //fun onPressRedoButton(option: OptionPaint)
-    //fun onPressEraserButton(option: OptionPaint)
+    fun onPressRefreshButton(option: OptionPaint)
+    fun onPressPinchButton(option: OptionPaint)
     fun onPressSwatchButton()
 }
 

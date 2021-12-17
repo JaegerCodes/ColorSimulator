@@ -1,5 +1,6 @@
 package com.llamasoft.envi.ui.simulator
 
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Matrix
@@ -7,11 +8,8 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
@@ -28,21 +26,30 @@ import com.llamasoft.envi.ui.components.ColorExplorerDialog
 import com.llamasoft.envi.util.*
 import com.llamasoft.envi.ar.segmentor.SeedPointAndColor
 import com.llamasoft.envi.ar.segmentor.SegmentorImpl
+import com.llamasoft.envi.databinding.SheetPaintToolsBinding
 import com.tektonlabs.americancolors.app.util.onTouch
+import org.opencv.android.BaseLoaderCallback
+import org.opencv.android.LoaderCallbackInterface
+import org.opencv.android.OpenCVLoader
 import org.opencv.core.Point
 
 class SimulatorFragment : Fragment() {
 
     private var _binding: FragmentSimulatorBinding? = null
     private val binding get() = _binding!!
+    private var originalBitmap  : Bitmap? = null
+    private var srcBitmap       : Bitmap? = null
+    private var brushStaging    : Bitmap? = null
     private var rgbWallColor    : List<Int> = arrayListOf(0, 0, 0)
     private val imageQueue = ArrayDeque<Bitmap>(100)
-    private var srcBitmap       : Bitmap? = null
-    private var paintType       : PaintType = PaintType.Paint
+    private val historySize     : Int = 10
+    private var oldHeight       : Float = 0f
+    private var savedColors     : List<SavedColors> = ArrayList()
     private var paintBrushSize  : Int = 10
-    private val historySize  : Int = 10
+    private var paintType       : PaintType = PaintType.Paint
     private val segmentor       : SegmentorImpl = SegmentorImpl()
     private lateinit var optionPaintAdapter: OptionPaintAdapter
+    private lateinit var sheet: SheetPaintToolsBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,38 +66,103 @@ class SimulatorFragment : Fragment() {
     }
 
     private fun setupView() {
+        sheet = binding.sheetPaintTools
         binding.apply {
-            selectedImage.onTouch { image, event ->
-                mainScroll.setScrollingEnabled(false)
-                if(paintType == PaintType.Paint) {
-                    when (event.action) {
-                        MotionEvent.ACTION_UP -> paintPicture(image as ImageView, event)
-                        MotionEvent.ACTION_CANCEL ->
-                            mainScroll.setScrollingEnabled(true)
+            binding.root.viewTreeObserver
+                .addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+                    override fun onPreDraw(): Boolean {
+                        binding.root.viewTreeObserver.removeOnPreDrawListener(this)
+                        oldHeight = getSheetHeight()
+                        return true
                     }
-                }else{
-                    when (event.action) {
-                        MotionEvent.ACTION_DOWN -> startBrushEvent()
-                        MotionEvent.ACTION_MOVE -> useBrush(image as ImageView, event)
-                        MotionEvent.ACTION_UP,
-                        MotionEvent.ACTION_CANCEL ->
-                            stopBrushEvent()
-                    }
+                })
+            sheet.layout.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+                if (oldHeight < getSheetHeight()) {
+                    oldHeight = getSheetHeight() * 2
+                    sheet.layout.animate().translationY(getSheetHeight()).duration = 1000
                 }
             }
-            recyclerView.adapter = SavedColorAdapter(emptyColors, listenerSavedColors)
+            sheet.peekButton.onTouch { _, motionEvent ->
+                when (motionEvent.action) { MotionEvent.ACTION_DOWN -> runSheetAnimation() }
+            }
+            binding.sheetBg.onTouch { _, motionEvent ->
+                when (motionEvent.action) { MotionEvent.ACTION_DOWN -> runSheetAnimation() }
+            }
+            selectedImage.onTouch { image, event ->
+                when (paintType) {
+                    PaintType.Paint -> {
+                        when (event.action) {
+                            MotionEvent.ACTION_UP -> paintPicture(image as ImageView, event)
+                        }
+                    }
+                    PaintType.Brush -> {
+                        showVerticalTools(event)
+                        when (event.action) {
+                            MotionEvent.ACTION_DOWN -> {
+                                selectedImage.maxZoom = selectedImage.currentZoom
+                                selectedImage.minZoom = selectedImage.currentZoom
+                                startBrushEvent()
+                            }
+                            MotionEvent.ACTION_MOVE -> useBrush(image as ImageView, event)
+                            MotionEvent.ACTION_UP,
+                            MotionEvent.ACTION_CANCEL ->
+                                stopBrushEvent()
+                        }
+                    }
+                    else -> {}
+                }
+            }
+            undoButton.setOnClickListener {
+                onClickUndoButton()
+            }
+            sliderBackground.setOnClickListener {
+                setAndShowBrushSlider(false)
+            }
             brushSizeSlider.addOnChangeListener { _, value, _ -> paintBrushSize = value.toInt() }
-            optionPaintAdapter  = OptionPaintAdapter(paintMenu, paintOptions)
-            val itemAnimator    = paintMenuList.itemAnimator as SimpleItemAnimator?
-            itemAnimator?.supportsChangeAnimations = false
-            paintMenuList.adapter = optionPaintAdapter
-            loadImage()
         }
-        //colorsVM.getSavedColors()
-        //simulatorVM.updateColor("#FFFFFFFF")
-        //colorsVM.setProjectStep(ProjectSteps.ImagePainter.name)
+        setupPaintTools()
+        configureOpenCV()
     }
-    private var brushStaging: Bitmap? = null
+    private fun welcomeAnimation() {
+        sheet.layout.alpha = 1f
+        sheet.layout.animate().translationY(getSheetHeight()).duration = 1000
+    }
+    private fun showVerticalTools(event: MotionEvent) {
+        when (event.action) {
+            MotionEvent.ACTION_UP,
+            MotionEvent.ACTION_CANCEL -> binding.verticalTools.visibility = View.VISIBLE
+            else -> binding.verticalTools.visibility = View.INVISIBLE
+        }
+    }
+
+
+    private fun onClickUndoButton() {
+        setAndShowBrushSlider(false)
+        undoStep()
+        showNewestImage()
+    }
+
+    private fun setupPaintTools() = sheet.apply {
+        val itemAnimator        = paintMenuList.itemAnimator as SimpleItemAnimator?
+        itemAnimator?.supportsChangeAnimations = false
+        optionPaintAdapter      = OptionPaintAdapter(paintMenu, paintToolsListener)
+        paintMenuList.adapter   = optionPaintAdapter
+        loadImage()
+    }
+
+    private fun getSheetHeight() = sheet.layout.height.toFloat() - sheet.peekButton.height.toFloat()
+
+    private fun runSheetAnimation() {
+        sheet.layout.alpha = 1f
+        if (sheet.layout.translationY > 0) {
+            sheet.layout.animate().translationY(0f).duration = 300
+            binding.sheetBg.visibility = View.VISIBLE
+        } else {
+            sheet.layout.animate().translationY(getSheetHeight()).duration = 300
+            binding.sheetBg.visibility = View.GONE
+        }
+    }
+
     private fun startBrushEvent(){
         val tmp = imageQueue.last()
         brushStaging = tmp.copy(tmp.config,true)
@@ -99,7 +171,6 @@ class SimulatorFragment : Fragment() {
     private fun stopBrushEvent(){
         addImageStep(brushStaging!!)
         binding.selectedImage.setImageBitmap(brushStaging)
-        binding.mainScroll.setScrollingEnabled(true)
     }
 
     private fun loadImage() = binding.apply {
@@ -118,7 +189,7 @@ class SimulatorFragment : Fragment() {
         _binding?.selectedImage?.setImageBitmap(resource)
         srcBitmap = resource
         imageQueue.clear()
-        if(srcBitmap!=null){
+        if (srcBitmap != null) {
             imageQueue.addLast(srcBitmap!!)
         }
     }
@@ -128,76 +199,90 @@ class SimulatorFragment : Fragment() {
         .load(urlImage)
         .into(object : BitmapImageViewTarget(binding.selectedImage) {
             override fun setResource(resource: Bitmap?) {
+                originalBitmap = resource
                 setImage(resource)
-                //simulatorVM.initializeSimulator(srcBitmap)
             }
         })
 
     private fun loadLocalImage(uriImage: Uri) = binding.apply {
         selectedImage.setImageURI(uriImage)
         selectedImage.drawable?.let {
-            srcBitmap = (it as BitmapDrawable).bitmap
-            setImage(srcBitmap)
-            //simulatorVM.initializeSimulator(srcBitmap)
+            (it as BitmapDrawable).bitmap?.let { bm ->
+                srcBitmap       = bm
+                originalBitmap  = bm
+                setImage(srcBitmap)
+            }
+            welcomeAnimation()
         }
     }
 
-    private val paintOptions = object : PaintMenuListener {
+    private val paintToolsListener = object : PaintMenuListener {
         override fun onPressBucketButton(option: OptionPaint) {
+            binding.selectedImage.scrollable = true
             setAndShowBrushSlider(false)
             paintType = PaintType.Paint
             optionPaintAdapter.changeBordersColor(option)
             showNewestImage()
+            binding.currentTool.setImageResource(option.iconDrawableRes)
         }
 
         override fun onPressBrushButton(option: OptionPaint) {
+            binding.selectedImage.scrollable = false
             setAndShowBrushSlider(true, resources.getString(R.string.brush_slider_title_paint_brush))
             paintType = PaintType.Brush
             optionPaintAdapter.changeBordersColor(option)
             showNewestImage()
+            runSheetAnimation()
+            binding.currentTool.setImageResource(option.iconDrawableRes)
         }
 
         override fun onPressMirrorButton(option: OptionPaint) {
+            binding.selectedImage.scrollable = true
             setAndShowBrushSlider(false)
-            paintType = PaintType.None
             optionPaintAdapter.changeBordersColor(option)
+            binding.currentTool.setImageResource(option.iconDrawableRes)
+            binding.selectedImage.setImageBitmap(originalBitmap)
+            paintType = PaintType.None
+            runSheetAnimation()
+            binding.selectedImage.resetZoom()
         }
 
         override fun onPressUndoButton(option: OptionPaint) {
-            setAndShowBrushSlider(false)
-            undoStep()
-            showNewestImage()
+            onClickUndoButton()
         }
 
+        override fun onPressRefreshButton(option: OptionPaint) {
+            runSheetAnimation()
+            onClickRefreshButton()
+        }
+
+        override fun onPressPinchButton(option: OptionPaint) {
+            optionPaintAdapter.changeBordersColor(option)
+            binding.selectedImage.scrollable = true
+            paintType = PaintType.None
+            binding.currentTool.setImageResource(option.iconDrawableRes)
+            binding.selectedImage.resetZoom()
+        }
 
         override fun onPressSwatchButton() {
             val colorExplorerDialog: ColorExplorerDialog = ColorExplorerDialog.newInstance(colorPickerLister)
             colorExplorerDialog.show(childFragmentManager, colorExplorerDialog.tag)
         }
     }
-    private fun showNewestImage(){
+
+    private fun onClickRefreshButton() {
+        setAndShowBrushSlider(false)
+        setImage(originalBitmap)
+    }
+
+    private fun showNewestImage() {
         binding.selectedImage.setImageBitmap(imageQueue.last())
-        bringToFront(binding.selectedImage)
+        binding.brushSizeSliderContainer.bringToFront()
     }
     private fun undoStep() {
-        if(imageQueue.size>1){
+        if (imageQueue.size > 1) {
             imageQueue.removeLast()
         }
-    }
-    private fun bringToFront(image: ImageView) = binding.apply {
-        /*hen (image.id) {
-            R.id.selectedImage -> {
-                originalImage.visibility    = View.INVISIBLE
-                selectedImage.visibility    = View.VISIBLE
-                selectedImage.bringToFront()
-            }
-            R.id.originalImage -> {
-                selectedImage.visibility    = View.INVISIBLE
-                originalImage.visibility    = View.VISIBLE
-                originalImage.bringToFront()
-            }
-        }*/
-        brushSizeSliderContainer.bringToFront()
     }
 
     private fun setAndShowBrushSlider(show : Boolean, title : String? = null) {
@@ -215,13 +300,6 @@ class SimulatorFragment : Fragment() {
         }
     }
 
-    /*private val colorFinderListener: AppListener<String> = object : AppListener<String> {
-        override fun onPressPrimaryButton(model: String) {
-            updateColor(model)
-            //colorsVM.saveColor(ColorUnits("TITLE", "102", model))
-        }
-    }*/
-
     private fun paintPicture(image: ImageView, event: MotionEvent) {
         paintContoursFromSelectedWall(image, event)
         showNewestImage()
@@ -236,12 +314,9 @@ class SimulatorFragment : Fragment() {
     private var listenerSavedColors: AppListener<SavedColors> = object : AppListener<SavedColors> {
         override fun onSelectItemView(model: SavedColors) {
             updateColor(model.hex)
+            // binding.currentColor.imageTintList = ColorStateList.valueOf(Color.parseColor(model.hex))
+            binding.currentColor.backgroundTintList = ColorStateList.valueOf(Color.parseColor(model.hex))
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     fun updateColor(hexString: String) {
@@ -255,14 +330,13 @@ class SimulatorFragment : Fragment() {
 
     private fun addImageStep(bitmap: Bitmap){
         imageQueue.addLast(bitmap)
-        if(imageQueue.size>historySize){
+        if (imageQueue.size > historySize) {
             imageQueue.removeFirst()
         }
     }
 
     private fun paintWithBrush(imageView: ImageView, imageTap: MotionEvent, brushSize: Int) {
         val (x, y) = getMotionEvent(imageTap, imageView)
-        //updateWall(srcBitmap, x.toDouble(), y.toDouble())
         brushStaging?.let {
             val seed = SeedPointAndColor(Point(x.toDouble(), y.toDouble()), rgbWallColor)
             brushStaging = segmentor.useBrush(it, seed, brushSize)
@@ -274,12 +348,9 @@ class SimulatorFragment : Fragment() {
     ) {
         if (rgbWallColor.isNotEmpty()) {
             val (x, y) = getMotionEvent(imageTap, imageView)
-            //updateWall(srcBitmap, x.toDouble(), y.toDouble())
             val seed = SeedPointAndColor(Point(x.toDouble(), y.toDouble()), rgbWallColor)
-            val bitmap = segmentor.predictAndColorMultiTapSingleMask(imageQueue.last(), listOf(seed));
-            if(bitmap!=null){
-                addImageStep(bitmap)
-            }
+            val bitmap = segmentor.predictAndColorMultiTapSingleMask(imageQueue.last(), listOf(seed))
+            bitmap?.let { addImageStep(it) }
         }
     }
 
@@ -313,5 +384,15 @@ class SimulatorFragment : Fragment() {
             y = bitmap.height - 1
         }
         return Pair(x, y)
+    }
+
+    private fun configureOpenCV() {
+        val loaderCallback: BaseLoaderCallback = object : BaseLoaderCallback(requireContext()) {
+            override fun onManagerConnected(status: Int) { if (status != SUCCESS) super.onManagerConnected(status) }
+        }
+        when (!OpenCVLoader.initDebug()) {
+            true -> OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION, requireContext(), loaderCallback)
+            false -> loaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS)
+        }
     }
 }

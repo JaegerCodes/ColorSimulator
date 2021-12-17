@@ -49,7 +49,8 @@ enum class PaintMenu {
     Mirror,
     //Eraser,
     Undo,
-    //Redo,
+    Refresh,
+    Pinch,
     Swatch
 }
 

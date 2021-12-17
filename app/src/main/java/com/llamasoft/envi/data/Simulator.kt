@@ -7,17 +7,19 @@ import com.llamasoft.envi.util.PaintMenu
 data class OptionPaint(
     @DrawableRes var iconDrawableRes: Int,
     var type: PaintMenu,
-    var clicked: Boolean
+    var clicked: Boolean,
+    val clickable: Boolean = true
 )
 
 val paintMenu = arrayListOf(
-    OptionPaint(R.drawable.ic_simulator_bucket, PaintMenu.Bucket, true),
-    OptionPaint(R.drawable.ic_simulator_brush, PaintMenu.Brush, false),
-    OptionPaint(R.drawable.ic_simulator_mirror, PaintMenu.Mirror, false),
-    // OptionPaint(R.drawable.ic_simulator_eraser, PaintMenu.Eraser, false),
-    OptionPaint(R.drawable.ic_undo, PaintMenu.Undo, false),
-    // OptionPaint(R.drawable.ic_redo, PaintMenu.Redo, false),
-    OptionPaint(R.drawable.ic_swatch, PaintMenu.Swatch, false),
+    OptionPaint(R.drawable.ic_simulator_bucket, PaintMenu.Bucket, clicked = true),
+    OptionPaint(R.drawable.ic_simulator_brush, PaintMenu.Brush, clicked = false),
+    OptionPaint(R.drawable.ic_simulator_mirror, PaintMenu.Mirror, clicked = false),
+// OptionPaint(R.drawable.ic_simulator_eraser, PaintMenu.Eraser, false),
+    OptionPaint(R.drawable.ic_undo, PaintMenu.Undo, clicked = false, clickable = false),
+    OptionPaint(R.drawable.ic_refresh, PaintMenu.Refresh, clicked = false, clickable = false),
+    OptionPaint(R.drawable.ic_pinch, PaintMenu.Pinch, clicked = false),
+    OptionPaint(R.drawable.ic_swatch, PaintMenu.Swatch, clicked = false, clickable = false),
 )
 
 data class SavedColors(

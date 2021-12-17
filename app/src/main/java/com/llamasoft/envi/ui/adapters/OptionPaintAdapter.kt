@@ -49,20 +49,20 @@ class OptionPaintAdapter(
             val container = itemView.findViewById<ShapeableImageView>(R.id.border)
             val icon = itemView.findViewById<ImageView>(R.id.icon_simulator)
             icon.setImageResource(option.iconDrawableRes)
-            if (adapterPosition <= options.size - 3)
+            if (option.clickable) {
                 changeItemTint(container, icon, option.clicked)
+            }
             layout.setOnClickListener {
                 when (option.type) {
                     PaintMenu.Bucket    -> listener.onPressBucketButton(option)
                     PaintMenu.Brush     -> listener.onPressBrushButton(option)
                     PaintMenu.Mirror    -> listener.onPressMirrorButton(option)
-                    //PaintMenu.Eraser    -> {}
                     PaintMenu.Undo      -> listener.onPressUndoButton(option)
-                    //PaintMenu.Redo      -> listener.onPressRedoButton(option)
+                    PaintMenu.Refresh   -> listener.onPressRefreshButton(option)
+                    PaintMenu.Pinch     -> listener.onPressPinchButton(option)
                     PaintMenu.Swatch    -> listener.onPressSwatchButton()
                 }
             }
-
         }
 
         private fun changeItemTint(container: ShapeableImageView, icon: ImageView, clicked: Boolean) {
