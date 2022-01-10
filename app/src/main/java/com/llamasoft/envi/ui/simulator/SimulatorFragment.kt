@@ -9,24 +9,24 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
-import androidx.fragment.app.Fragment
 import android.widget.ImageView
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.BitmapImageViewTarget
 import com.llamasoft.envi.R
+import com.llamasoft.envi.ar.segmentor.SeedPointAndColor
+import com.llamasoft.envi.ar.segmentor.SegmentorImpl
 import com.llamasoft.envi.data.OptionPaint
 import com.llamasoft.envi.data.SavedColors
 import com.llamasoft.envi.data.emptyColors
 import com.llamasoft.envi.data.paintMenu
 import com.llamasoft.envi.databinding.FragmentSimulatorBinding
+import com.llamasoft.envi.databinding.SheetPaintToolsBinding
 import com.llamasoft.envi.ui.adapters.OptionPaintAdapter
 import com.llamasoft.envi.ui.adapters.SavedColorAdapter
 import com.llamasoft.envi.ui.components.ColorExplorerDialog
 import com.llamasoft.envi.util.*
-import com.llamasoft.envi.ar.segmentor.SeedPointAndColor
-import com.llamasoft.envi.ar.segmentor.SegmentorImpl
-import com.llamasoft.envi.databinding.SheetPaintToolsBinding
 import com.tektonlabs.americancolors.app.util.onTouch
 import org.opencv.android.BaseLoaderCallback
 import org.opencv.android.LoaderCallbackInterface
@@ -34,22 +34,105 @@ import org.opencv.android.OpenCVLoader
 import org.opencv.core.Point
 
 class SimulatorFragment : Fragment() {
-
-    private var _binding: FragmentSimulatorBinding? = null
-    private val binding get() = _binding!!
+    private val segmentor   : SegmentorImpl = SegmentorImpl()
+    private val historySize : Int = 10
+    private var brushStaging: Bitmap? = null
+    private val imageQueue = ArrayDeque<Bitmap>(100)
+    private var paintType       : PaintType = PaintType.Paint
+    private var rgbaColor       : List<Int> = arrayListOf()
     private var originalBitmap  : Bitmap? = null
     private var srcBitmap       : Bitmap? = null
-    private var brushStaging    : Bitmap? = null
-    private var rgbWallColor    : List<Int> = arrayListOf(0, 0, 0)
-    private val imageQueue = ArrayDeque<Bitmap>(100)
-    private val historySize     : Int = 10
-    private var oldHeight       : Float = 0f
-    private var savedColors     : List<SavedColors> = ArrayList()
     private var paintBrushSize  : Int = 10
-    private var paintType       : PaintType = PaintType.Paint
-    private val segmentor       : SegmentorImpl = SegmentorImpl()
+    private var _binding: FragmentSimulatorBinding? = null
+    private val binding get() = _binding!!
+    private var oldHeight       : Float = 0f
     private lateinit var optionPaintAdapter: OptionPaintAdapter
     private lateinit var sheet: SheetPaintToolsBinding
+
+    fun updateColor(hexString: String) {
+        val hex: Int = Color.parseColor(hexString)
+        val red = hex and 0xFF0000 shr 16
+        val green = hex and 0xFF00 shr 8
+        val blue = hex and 0xFF
+        rgbaColor = arrayListOf(red, green, blue)
+    }
+
+    private fun getMotionEvent(
+        imageTap: MotionEvent,
+        imageView: ImageView
+    ): Pair<Int, Int> {
+        val eventX = imageTap.x
+        val eventY = imageTap.y
+        val eventXY = floatArrayOf(eventX, eventY)
+
+        val invertMatrix = Matrix()
+        imageView.imageMatrix.invert(invertMatrix)
+
+        invertMatrix.mapPoints(eventXY)
+        var x = Integer.valueOf(eventXY[0].toInt())
+        var y = Integer.valueOf(eventXY[1].toInt())
+
+        val imgDrawable: Drawable = imageView.drawable
+        val bitmap = (imgDrawable as BitmapDrawable).bitmap
+
+        if (x < 0) {
+            x = 0
+        } else if (x > bitmap.width - 1) {
+            x = bitmap.width - 1
+        }
+
+        if (y < 0) {
+            y = 0
+        } else if (y > bitmap.height - 1) {
+            y = bitmap.height - 1
+        }
+        return Pair(x, y)
+    }
+
+    private fun addImageStep(bitmap: Bitmap){
+        imageQueue.addLast(bitmap)
+        if (imageQueue.size > historySize) {
+            imageQueue.removeFirst()
+        }
+    }
+
+    private fun startBrushEvent() {
+        val tmp = imageQueue.last()
+        brushStaging = tmp.copy(tmp.config,true)
+    }
+
+    private fun paintWithBrush(imageView: ImageView, imageTap: MotionEvent, brushSize: Int): Bitmap? {
+        val (x, y) = getMotionEvent(imageTap, imageView)
+        brushStaging?.let {
+            val seed = SeedPointAndColor(Point(x.toDouble(), y.toDouble()), rgbaColor)
+            brushStaging = segmentor.useBrush(it, seed, brushSize)
+        }
+        return brushStaging
+    }
+
+    private fun stopBrushEvent(): Bitmap? = brushStaging?.let {
+        addImageStep(it)
+        return it
+    }
+
+    private fun paintContoursFromSelectedWall(
+        imageView: ImageView, imageTap: MotionEvent
+    ) {
+        if (rgbaColor.isNotEmpty()) {
+            val (x, y) = getMotionEvent(imageTap, imageView)
+            val seed = SeedPointAndColor(Point(x.toDouble(), y.toDouble()), rgbaColor)
+            val bitmap = segmentor.predictAndColorMultiTapSingleMask(imageQueue.last(), listOf(seed))
+            bitmap?.let { addImageStep(it) }
+        }
+    }
+
+    private fun onSetImage(resource: Bitmap?) {
+        srcBitmap = resource
+        imageQueue.clear()
+        srcBitmap?.let { imageQueue.addLast(it) }
+    }
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -148,6 +231,7 @@ class SimulatorFragment : Fragment() {
         optionPaintAdapter      = OptionPaintAdapter(paintMenu, paintToolsListener)
         paintMenuList.adapter   = optionPaintAdapter
         loadImage()
+        recyclerView.adapter = SavedColorAdapter(emptyColors, listenerSavedColors)
     }
 
     private fun getSheetHeight() = sheet.layout.height.toFloat() - sheet.peekButton.height.toFloat()
@@ -163,15 +247,6 @@ class SimulatorFragment : Fragment() {
         }
     }
 
-    private fun startBrushEvent(){
-        val tmp = imageQueue.last()
-        brushStaging = tmp.copy(tmp.config,true)
-    }
-
-    private fun stopBrushEvent(){
-        addImageStep(brushStaging!!)
-        binding.selectedImage.setImageBitmap(brushStaging)
-    }
 
     private fun loadImage() = binding.apply {
         arguments?.apply {
@@ -189,9 +264,8 @@ class SimulatorFragment : Fragment() {
         _binding?.selectedImage?.setImageBitmap(resource)
         srcBitmap = resource
         imageQueue.clear()
-        if (srcBitmap != null) {
-            imageQueue.addLast(srcBitmap!!)
-        }
+        srcBitmap?.let { imageQueue.addLast(it) }
+        onSetImage(resource)
     }
     private fun loadRemoteImage(urlImage: String) = Glide.with(requireContext())
         .asBitmap()
@@ -297,6 +371,7 @@ class SimulatorFragment : Fragment() {
     private val colorPickerLister: AppListener<String> = object : AppListener<String> {
         override fun onPressPrimaryButton(model: String) {
             updateColor(model)
+            binding.currentColor.backgroundTintList = ColorStateList.valueOf(Color.parseColor(model))
         }
     }
 
@@ -319,72 +394,7 @@ class SimulatorFragment : Fragment() {
         }
     }
 
-    fun updateColor(hexString: String) {
-        val hex: Int = Color.parseColor(hexString)
-        // val alpha = hex and -0x1000000 shr 24
-        val red = hex and 0xFF0000 shr 16
-        val green = hex and 0xFF00 shr 8
-        val blue = hex and 0xFF
-        rgbWallColor = arrayListOf(red, green, blue)
-    }
 
-    private fun addImageStep(bitmap: Bitmap){
-        imageQueue.addLast(bitmap)
-        if (imageQueue.size > historySize) {
-            imageQueue.removeFirst()
-        }
-    }
-
-    private fun paintWithBrush(imageView: ImageView, imageTap: MotionEvent, brushSize: Int) {
-        val (x, y) = getMotionEvent(imageTap, imageView)
-        brushStaging?.let {
-            val seed = SeedPointAndColor(Point(x.toDouble(), y.toDouble()), rgbWallColor)
-            brushStaging = segmentor.useBrush(it, seed, brushSize)
-        }
-    }
-
-    private fun paintContoursFromSelectedWall(
-        imageView: ImageView, imageTap: MotionEvent
-    ) {
-        if (rgbWallColor.isNotEmpty()) {
-            val (x, y) = getMotionEvent(imageTap, imageView)
-            val seed = SeedPointAndColor(Point(x.toDouble(), y.toDouble()), rgbWallColor)
-            val bitmap = segmentor.predictAndColorMultiTapSingleMask(imageQueue.last(), listOf(seed))
-            bitmap?.let { addImageStep(it) }
-        }
-    }
-
-    private fun getMotionEvent(
-        imageTap: MotionEvent,
-        imageView: ImageView
-    ): Pair<Int, Int> {
-        val eventX = imageTap.x
-        val eventY = imageTap.y
-        val eventXY = floatArrayOf(eventX, eventY)
-
-        val invertMatrix = Matrix()
-        imageView.imageMatrix.invert(invertMatrix)
-
-        invertMatrix.mapPoints(eventXY)
-        var x = Integer.valueOf(eventXY[0].toInt())
-        var y = Integer.valueOf(eventXY[1].toInt())
-
-        val imgDrawable: Drawable = imageView.drawable
-        val bitmap = (imgDrawable as BitmapDrawable).bitmap
-
-        if (x < 0) {
-            x = 0
-        } else if (x > bitmap.width - 1) {
-            x = bitmap.width - 1
-        }
-
-        if (y < 0) {
-            y = 0
-        } else if (y > bitmap.height - 1) {
-            y = bitmap.height - 1
-        }
-        return Pair(x, y)
-    }
 
     private fun configureOpenCV() {
         val loaderCallback: BaseLoaderCallback = object : BaseLoaderCallback(requireContext()) {
@@ -395,4 +405,6 @@ class SimulatorFragment : Fragment() {
             false -> loaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS)
         }
     }
+
+
 }
